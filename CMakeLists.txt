@@ -38,9 +38,11 @@ include_directories(${CMAKE_SOURCE_DIR}/libs/include)
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(${PROJECT_NAME} 
-    dual-core.c
+    main.c
     libs/src/bh1750.c
     libs/src/bmp280.c
+    libs/src/core1.c
+    libs/src/ssd1306.c
 )
 
 pico_set_program_name(${PROJECT_NAME} "dual-core")
