@@ -56,7 +56,9 @@ pico_enable_stdio_usb(${PROJECT_NAME} 1)
 target_link_libraries(${PROJECT_NAME}
         pico_stdlib
         pico_multicore
-        hardware_i2c)
+        hardware_i2c
+        hardware_pwm
+        )
 
 # Add the standard include files to the build
 target_include_directories(${PROJECT_NAME} PRIVATE

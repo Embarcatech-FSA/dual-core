@@ -19,5 +19,11 @@ typedef struct {
 #define I2C_PORT_SSD1306 i2c1
 #define I2C_SDA_SSD1306 14
 #define I2C_SCL_SSD1306 15
+#define DISPLAY_WIDTH 128
+#define DISPLAY_HEIGHT 64
+#define DISPLAY_ADDRESS 0x3C
+#define LED_RED 13
+#define LED_BLUE 12
+#define BUZZER_PIN 10
 
 #endif // CONFIG_H
