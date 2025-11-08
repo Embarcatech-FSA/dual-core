@@ -1,3 +1,8 @@
+/**
+ * Sistema de monitoramento e interface com dois núcleos de processamento.
+ * Core 0 é responsável pela aquisição contínua e processamento de dados de dois sensores: BMP280 e BH1750.
+ * Core 1 é responsável pela Interface de Usuário.
+ */
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "bmp280.h"
@@ -29,8 +34,12 @@ int main()
 
     bh1750_power_on(I2C_PORT_SENSORES);
     static sensor_data_t dados;
+    uint32_t leituras_realizadas = 0;
 
     while (true) {
+        // Registra timestamp antes da leitura
+        uint32_t tempo_inicial = to_ms_since_boot(get_absolute_time());
+        
         // Core 0 coleta os dados dos sensores
         bmp280_read_raw(I2C_PORT_SENSORES, &raw_temp_bmp, &raw_pressure);
         int32_t temperature = bmp280_convert_temp(raw_temp_bmp, &params);
@@ -41,6 +50,12 @@ int main()
         dados.temperatura = temperature / 100.0f; 
         dados.pressao = pressure / 100.0f;
         dados.iluminancia = lux;
+        dados.timestamp_leitura = tempo_inicial;
+        
+        printf("\nCore 0 - Leitura %lu realizada em %lu ms\n", 
+               ++leituras_realizadas, 
+               to_ms_since_boot(get_absolute_time()) - tempo_inicial);
+               
         multicore_fifo_push_blocking((uint32_t)&dados);  
         sleep_ms(1000);
     }

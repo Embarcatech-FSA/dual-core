@@ -50,6 +50,7 @@ void core1_entry() {
     bool buzzer_is_on = false;
     uint64_t last_toggle_time = 0;
     uint32_t BEEP_INTERVAL_MS = 200;
+    uint32_t atualizacoes_display = 0;
 
     gpio_init(LED_RED);
     gpio_init(LED_BLUE);
@@ -80,8 +81,13 @@ void core1_entry() {
         if (multicore_fifo_rvalid()) {
             uint32_t ptr = multicore_fifo_pop_blocking();
             sensor_data_t* dados = (sensor_data_t*)ptr;
-
-            printf("Core 1 - Processando dados:\n");
+            uint32_t tempo_processamento = to_ms_since_boot(get_absolute_time());
+            uint32_t latencia = tempo_processamento - dados->timestamp_leitura;
+            
+            atualizacoes_display++;
+            
+            printf("Core 1 - Escrita %lu:\n", atualizacoes_display);
+            printf("Tempo desde leitura: %lu ms\n", latencia);
             printf("Temperatura: %.2f C\n", dados->temperatura);
             printf("Iluminância: %.2f lux\n", dados->iluminancia);
             printf("Pressão: %.2f hPa\n", dados->pressao);
@@ -89,7 +95,7 @@ void core1_entry() {
             // Atualiza a flag de estado de alerta
             if (dados->temperatura > 36.0f || dados->iluminancia < 10.0f) {
                 if (!in_alert_state) {
-                    printf("ALERTA: Condição crítica detectada!\n");
+                    printf("\nALERTA: Condição crítica detectada!\n");
                     in_alert_state = true;
                 }
             } else {
@@ -113,7 +119,7 @@ void core1_entry() {
                     ssd1306_draw_string(&ssd, line_buffer, 0, 25);
                 }
                 if (dados->iluminancia < 100.0f) {
-                    sprintf(line_buffer, "Luz Baixa: %.0flx", dados->iluminancia);
+                    sprintf(line_buffer, "Luz Baixa: %.0f lx", dados->iluminancia);
                     ssd1306_draw_string(&ssd, line_buffer, 0, 40);
                 }
                 // Acende o LED vermelho e apaga o azul

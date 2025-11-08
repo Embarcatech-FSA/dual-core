@@ -6,6 +6,7 @@ typedef struct {
     float temperatura;
     float pressao;
     float iluminancia;
+    uint32_t timestamp_leitura;    // Timestamp quando os dados foram lidos
 } sensor_data_t;
 
 /* VARIÁVEIS USADAS NO CORE 0 */
