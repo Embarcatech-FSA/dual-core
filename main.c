@@ -12,7 +12,6 @@
 int32_t raw_temp_bmp;
 int32_t raw_pressure;
 struct bmp280_calib_param params;
-float t_fine = 3.0f; // Calibração para compensar a temperatura
 
 int main()
 {
@@ -39,7 +38,7 @@ int main()
 
         uint16_t lux = bh1750_read_measurement(I2C_PORT_SENSORES);
 
-        dados.temperatura = (temperature / 100.0f) - t_fine; 
+        dados.temperatura = temperature / 100.0f; 
         dados.pressao = pressure / 100.0f;
         dados.iluminancia = lux;
         multicore_fifo_push_blocking((uint32_t)&dados);  
